@@ -37,3 +37,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
+
+export async function GET() {
+    try {
+      await connectToDB()
+      const recipes = await Recipe.find().sort({ createdAt: -1 })
+      return NextResponse.json({ recipes }, { status: 200 })
+    } catch (error: any) {
+      console.error('Error fetching recipes:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+  }
