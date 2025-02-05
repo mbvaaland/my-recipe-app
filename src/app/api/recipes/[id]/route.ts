@@ -67,3 +67,30 @@ export async function PATCH(request: Request, { params }: Params) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
+
+export async function DELETE(request: Request, { params }: Params) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    await connectToDB()
+    const recipe = await Recipe.findById(params.id)
+    if (!recipe) {
+      return NextResponse.json({ error: 'Recipe not found' }, { status: 404 })
+    }
+
+    // Check ownership
+    if (recipe.userId !== session.user._id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    await recipe.deleteOne()
+
+    return NextResponse.json({ message: 'Recipe deleted' }, { status: 200 })
+  } catch (error: any) {
+    console.error('Error deleting recipe:', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
