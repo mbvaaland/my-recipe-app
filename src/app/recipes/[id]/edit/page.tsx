@@ -1,49 +1,77 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
-export default function CreateRecipePage() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+interface Recipe {
+  _id: string;
+  title: string;
+  description?: string;
+  ingredients: string[];
+  instructions?: string;
+  userId: string;
+}
 
-  // Form fields
+export default function EditRecipePage() {
+  const { data: session, status } = useSession();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [instructions, setInstructions] = useState("");
-
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Redirect to login if not authenticated
+  const router = useRouter();
+  const params = useParams();
+  const recipeId = params.id;
+
+  // 1. If not logged in, redirect
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
   }, [status, router]);
 
-  // If session is still loading, you can show a spinner or placeholder
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
+  // 2. Fetch existing recipe
+  useEffect(() => {
+    async function fetchRecipe() {
+      try {
+        const res = await fetch(`/api/recipes/${recipeId}`);
+        if (!res.ok) {
+          throw new Error("Failed to fetch recipe");
+        }
+        const data = await res.json();
+        const r = data.recipe;
+        
+        setTitle(r.title);
+        setDescription(r.description || "");
+        setIngredients(r.ingredients.join(", "));
+        setInstructions(r.instructions || "");
+      } catch (err: any) {
+        setError(err.message);
+      }
+    }
 
-  // Handle form submission
+    if (status === "authenticated") {
+      fetchRecipe();
+    }
+  }, [recipeId, status]);
+
+  // 3. Handle form submission
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      // Convert comma/line separated ingredients to array
       const ingArray = ingredients
-        .split(",") // or split by new lines, etc.
-        .map((item) => item.trim())
-        .filter((item) => item);
+        .split(",")
+        .map((i) => i.trim())
+        .filter((i) => i);
 
-      const res = await fetch("/api/recipes", {
-        method: "POST",
+      const res = await fetch(`/api/recipes/${recipeId}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
@@ -55,23 +83,29 @@ export default function CreateRecipePage() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to create recipe.");
+        throw new Error(data.error || "Failed to update recipe.");
       }
 
-      // If successful, redirect to /recipes
-      router.push("/recipes");
+      // Redirect to the recipe detail page
+      router.push(`/recipes/${recipeId}`);
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   }
 
+  if (status === "loading") {
+    return <p>Loading session...</p>;
+  }
+
+  if (error) {
+    return <p className="text-red-500">{error}</p>;
+  }
+
   return (
     <div className="max-w-lg mx-auto mt-8">
-      <h1 className="text-2xl font-bold mb-4">Create a New Recipe</h1>
-
-      {error && <p className="text-red-500">{error}</p>}
+      <h1 className="text-2xl font-bold mb-4">Edit Recipe</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -81,7 +115,6 @@ export default function CreateRecipePage() {
             className="w-full border rounded p-2"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Ex: My Delicious Soup"
             required
           />
         </div>
@@ -92,7 +125,6 @@ export default function CreateRecipePage() {
             className="w-full border rounded p-2"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="A hearty soup with vegetables..."
           />
         </div>
 
@@ -105,7 +137,6 @@ export default function CreateRecipePage() {
             className="w-full border rounded p-2"
             value={ingredients}
             onChange={(e) => setIngredients(e.target.value)}
-            placeholder="carrots, celery, onions"
           />
         </div>
 
@@ -115,16 +146,15 @@ export default function CreateRecipePage() {
             className="w-full border rounded p-2"
             value={instructions}
             onChange={(e) => setInstructions(e.target.value)}
-            placeholder="Step-by-step cooking instructions..."
           />
         </div>
 
         <button
           type="submit"
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           disabled={loading}
         >
-          {loading ? "Creating..." : "Create Recipe"}
+          {loading ? "Updating..." : "Update Recipe"}
         </button>
       </form>
     </div>

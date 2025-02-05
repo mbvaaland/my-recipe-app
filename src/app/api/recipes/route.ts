@@ -14,6 +14,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    console.log("DEBUG session.user =", session.user)
+
     // 2. Parse the request body
     const { title, description, ingredients, instructions } = await req.json()
 
