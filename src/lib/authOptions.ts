@@ -41,22 +41,5 @@ export const authOptions: AuthOptions = {
         }
       }
     })
-  ],
-  pages: {
-    signIn: '/login', // a custom login page you might create
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token._id = user._id
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (token) {
-        session.user._id = token._id
-      }
-      return session
-    }
-  }
+  ]
 }
