@@ -10,6 +10,7 @@ interface Recipe {
   ingredients: string[];
   instructions?: string;
   userId: string;
+  authorEmail?: string;
   imageUrl?: string; // <-- Add imageUrl if not already in your interface
 }
 
@@ -63,7 +64,7 @@ export default function RecipesListPage() {
                 <p className="text-gray-700">{recipe.description}</p>
               )}
               <p className="mt-2 text-sm text-gray-500">
-                By User: {recipe.userId}
+                By User: {recipe.authorEmail}
               </p>
             </Link>
           </li>

@@ -21,6 +21,7 @@ const RecipeSchema = new Schema<IRecipe>(
     instructions: { type: String, default: '' },
     // userId helps link this recipe to a user (owner)
     userId: { type: String, required: true },
+    authorEmail: { type: String },
 
     imageUrl: {type: String },
   },

@@ -74,6 +74,7 @@ export async function POST(req: Request) {
       ingredients,
       instructions,
       userId: session.user._id,
+      authorEmail: session.user.email,
       imageUrl,
     });
 
