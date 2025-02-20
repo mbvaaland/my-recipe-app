@@ -10,6 +10,7 @@ interface Recipe {
   ingredients: string[];
   instructions?: string;
   userId: string;
+  imageUrl?: string; // <-- Add imageUrl if not already in your interface
 }
 
 export default function RecipesListPage() {
@@ -42,11 +43,21 @@ export default function RecipesListPage() {
       <ul className="space-y-4">
         {recipes.map((recipe) => (
           <li key={recipe._id}>
-            {/* Wrap the entire content in a Link that points to the detail page */}
             <Link
               href={`/recipes/${recipe._id}`}
               className="block border p-4 rounded hover:bg-gray-50 transition"
             >
+              {/** 1) Show partial image if available */}
+              {recipe.imageUrl && (
+                <div className="w-full h-32 overflow-hidden rounded mb-2">
+                  <img
+                    src={recipe.imageUrl}
+                    alt={recipe.title}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              )}
+
               <h2 className="text-lg font-semibold">{recipe.title}</h2>
               {recipe.description && (
                 <p className="text-gray-700">{recipe.description}</p>
