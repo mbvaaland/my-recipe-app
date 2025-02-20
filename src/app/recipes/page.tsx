@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 interface Recipe {
   _id: string;
@@ -40,12 +41,20 @@ export default function RecipesListPage() {
       <h1 className="text-2xl font-bold mb-4">All Recipes</h1>
       <ul className="space-y-4">
         {recipes.map((recipe) => (
-          <li key={recipe._id} className="border p-4 rounded">
-            <h2 className="text-lg font-semibold">{recipe.title}</h2>
-            {recipe.description && (
-              <p className="text-gray-700">{recipe.description}</p>
-            )}
-            <p className="mt-2 text-sm text-gray-500">By User: {recipe.userId}</p>
+          <li key={recipe._id}>
+            {/* Wrap the entire content in a Link that points to the detail page */}
+            <Link
+              href={`/recipes/${recipe._id}`}
+              className="block border p-4 rounded hover:bg-gray-50 transition"
+            >
+              <h2 className="text-lg font-semibold">{recipe.title}</h2>
+              {recipe.description && (
+                <p className="text-gray-700">{recipe.description}</p>
+              )}
+              <p className="mt-2 text-sm text-gray-500">
+                By User: {recipe.userId}
+              </p>
+            </Link>
           </li>
         ))}
       </ul>
