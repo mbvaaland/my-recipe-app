@@ -1,127 +1,133 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 export default function CreateRecipePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Form fields
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
-
-  // If session is still loading, you can show a spinner or placeholder
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
-  // Handle form submission
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    if (!session) {
+      setError("You must be logged in to create a recipe.");
+      return;
+    }
     setLoading(true);
+    setError("");
 
     try {
-      // Convert comma/line separated ingredients to array
-      const ingArray = ingredients
-        .split(",") // or split by new lines, etc.
-        .map((item) => item.trim())
-        .filter((item) => item);
+      // 1) Build FormData
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("ingredients", ingredients);
+      formData.append("instructions", instructions);
+      if (imageFile) {
+        formData.append("image", imageFile); // must match `formData.get("image")` on server
+      }
 
+      // 2) Send POST to your /api/recipes route
       const res = await fetch("/api/recipes", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          description,
-          ingredients: ingArray,
-          instructions,
-        }),
+        body: formData,
       });
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to create recipe.");
+        throw new Error(data.error || "Failed to create recipe");
       }
 
-      // If successful, redirect to /recipes
+      // 3) On success, go to /recipes or /recipes/[id]
       router.push("/recipes");
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   }
 
+  if (status === "unauthenticated") {
+    router.push("/login");
+  }
+
   return (
-    <div className="max-w-lg mx-auto mt-8">
-      <h1 className="text-2xl font-bold mb-4">Create a New Recipe</h1>
-
-      {error && <p className="text-red-500">{error}</p>}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
+    <div className="max-w-md mx-auto mt-6">
+      <h1 className="text-2xl font-bold mb-4">Create a Recipe</h1>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <form onSubmit={handleSubmit}>
+        {/* Title */}
+        <div className="mb-4">
           <label className="block font-semibold">Title</label>
           <input
             type="text"
-            className="w-full border rounded p-2"
+            className="w-full border p-2 rounded"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Ex: My Delicious Soup"
             required
           />
         </div>
 
-        <div>
+        {/* Description */}
+        <div className="mb-4">
           <label className="block font-semibold">Description</label>
           <textarea
-            className="w-full border rounded p-2"
+            className="w-full border p-2 rounded"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="A hearty soup with vegetables..."
           />
         </div>
 
-        <div>
+        {/* Ingredients */}
+        <div className="mb-4">
           <label className="block font-semibold">Ingredients</label>
-          <small className="block text-gray-500 mb-1">
-            Separate by commas (e.g. "carrots, celery, onions").
+          <small className="text-gray-500">
+            Separate by commas (e.g. "salt, pepper, tomatoes")
           </small>
           <textarea
-            className="w-full border rounded p-2"
+            className="w-full border p-2 rounded mt-1"
             value={ingredients}
             onChange={(e) => setIngredients(e.target.value)}
-            placeholder="carrots, celery, onions"
           />
         </div>
 
-        <div>
+        {/* Instructions */}
+        <div className="mb-4">
           <label className="block font-semibold">Instructions</label>
           <textarea
-            className="w-full border rounded p-2"
+            className="w-full border p-2 rounded"
             value={instructions}
             onChange={(e) => setInstructions(e.target.value)}
-            placeholder="Step-by-step cooking instructions..."
+          />
+        </div>
+
+        {/* Single Image */}
+        <div className="mb-4">
+          <label className="block font-semibold">Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                setImageFile(e.target.files[0]);
+              }
+            }}
           />
         </div>
 
         <button
           type="submit"
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
           disabled={loading}
         >
           {loading ? "Creating..." : "Create Recipe"}

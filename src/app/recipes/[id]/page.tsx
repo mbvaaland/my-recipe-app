@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
+// 1) Interface now includes `imageUrl?: string;`
 interface Recipe {
   _id: string;
   title: string;
@@ -11,20 +12,21 @@ interface Recipe {
   ingredients: string[];
   instructions?: string;
   userId: string;
+  imageUrl?: string; // <-- new field
 }
 
 export default function RecipeDetailPage() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [error, setError] = useState("");
-  
+
   const router = useRouter();
   const params = useParams(); 
   const recipeId = params.id;
 
-  // 1) Grab the session to see who is logged in
+  // Grab session to check ownership
   const { data: session, status } = useSession();
 
-  // 2) Fetch the recipe details
+  // Fetch the recipe details
   useEffect(() => {
     async function fetchRecipe() {
       try {
@@ -45,18 +47,28 @@ export default function RecipeDetailPage() {
     return <p className="text-red-500">{error}</p>;
   }
 
-  // While we're fetching the recipe or checking the session, we can show a loading state
+  // Show a loading message while fetching the recipe or session is loading
   if (!recipe || status === "loading") {
     return <p>Loading recipe...</p>;
   }
 
-  // 3) Determine if the logged-in user owns this recipe
+  // Check if the logged-in user owns this recipe
   const isOwner = session?.user._id === recipe.userId;
 
-  // 4) Render the recipe details
+  // 2) Display the image if `imageUrl` is present
   return (
     <div className="max-w-2xl mx-auto mt-8">
       <h1 className="text-2xl font-bold mb-2">{recipe.title}</h1>
+
+      {/* Render recipe image if it exists */}
+      {recipe.imageUrl && (
+        <img
+          src={recipe.imageUrl}
+          alt={recipe.title}
+          className="w-full max-w-lg rounded mb-4"
+        />
+      )}
+
       <p className="text-gray-700 mb-4">{recipe.description}</p>
       
       <h2 className="text-lg font-semibold">Ingredients</h2>
@@ -69,7 +81,7 @@ export default function RecipeDetailPage() {
       <h2 className="text-lg font-semibold">Instructions</h2>
       <p className="mb-4">{recipe.instructions}</p>
 
-      {/* 5) Show Edit/Delete buttons only if the user is the owner */}
+      {/* Edit/Delete buttons only if user is the owner */}
       {isOwner && (
         <>
           <button
