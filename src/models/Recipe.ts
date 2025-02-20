@@ -9,6 +9,8 @@ interface IRecipe extends Document {
   instructions: string
   // Optional: user relationship
   userId: string
+
+  imageUrl?: string
 }
 
 const RecipeSchema = new Schema<IRecipe>(
@@ -19,6 +21,8 @@ const RecipeSchema = new Schema<IRecipe>(
     instructions: { type: String, default: '' },
     // userId helps link this recipe to a user (owner)
     userId: { type: String, required: true },
+
+    imageUrl: {type: String },
   },
   { timestamps: true }
 )
