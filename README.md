@@ -60,20 +60,20 @@ MyRecipeApp is a full-stack recipe sharing platform built with Next.js 13, TypeS
 
         3. Workflow:
 
-            •	Home Page: Welcoming message with quick links.
-            •	Recipes Page: Browse all recipes (each shows a partial image preview and basic details).
-            •	Recipe Detail Page: View the full recipe with detailed instructions and an image.
-            •	Create Recipe: Authenticated users can add new recipes with image uploads.
-            •	Edit/Delete: Owners can edit or delete their recipes from the detail page.
+            • Home Page: Welcoming message with quick links.
+            • Recipes Page: Browse all recipes (each shows a partial image preview and basic details).
+            • Recipe Detail Page: View the full recipe with detailed instructions and an image.
+            • Create Recipe: Authenticated users can add new recipes with image uploads.
+            • Edit/Delete: Owners can edit or delete their recipes from the detail page.
 
     Deployment
 
-            The easiest way to deploy MyRecipeApp is to use Vercel. Follow the Next.js deployment documentation for details on deploying with environment variables.
+        The easiest way to deploy MyRecipeApp is to use Vercel. Follow the Next.js deployment documentation for details on deploying with environment variables.
 
     Contributing
 
-            Contributions are welcome! If you’d like to improve the project, please fork the repository and create a pull request with your changes.
+        Contributions are welcome! If you’d like to improve the project, please fork the repository and create a pull request with your changes.
 
     License
 
-            MIT License
+        MIT License
