@@ -66,14 +66,14 @@ MyRecipeApp
             •	Create Recipe: Authenticated users can add new recipes with image uploads.
             •	Edit/Delete: Owners can edit or delete their recipes from the detail page.
 
-        Deployment
+    Deployment
 
             The easiest way to deploy MyRecipeApp is to use Vercel. Follow the Next.js deployment documentation for details on deploying with environment variables.
 
-        Contributing
+    Contributing
 
             Contributions are welcome! If you’d like to improve the project, please fork the repository and create a pull request with your changes.
 
-        License
+    License
 
             MIT License
