@@ -68,11 +68,13 @@ MyRecipeApp is a full-stack recipe sharing platform built with Next.js 13, TypeS
 
     Deployment
 
-    The easiest way to deploy MyRecipeApp is to use Vercel. Follow the Next.js deployment documentation for details on deploying with environment variables.
+    The easiest way to deploy MyRecipeApp is to use Vercel. 
+    Follow the Next.js deployment documentation for details on deploying with environment variables.
 
     Contributing
     
-    Contributions are welcome! If you’d like to improve the project, please fork the repository and create a pull request with your changes.
+    Contributions are welcome! 
+    If you’d like to improve the project, please fork the repository and create a pull request with your changes.
 
     License
 
