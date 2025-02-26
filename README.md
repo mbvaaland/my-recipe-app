@@ -1,6 +1,6 @@
 MyRecipeApp
 
-    MyRecipeApp is a full-stack recipe sharing platform built with Next.js 13, TypeScript, Tailwind CSS, Sass, and Node.js. Users can create, view, edit, and delete recipes, complete with image uploads via Cloudinary and secure authentication using NextAuth.
+MyRecipeApp is a full-stack recipe sharing platform built with Next.js 13, TypeScript, Tailwind, CSS, Sass, and Node.js. Users can create, view, edit, and delete recipes, complete with image uploads via Cloudinary and secure authentication using NextAuth.
 
     Features
 
